@@ -1,5 +1,4 @@
 import 'package:classly/screens/splashscreen.dart';
-import 'package:classly/widgets/calendar_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
