@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "50519129268",
+    "project_id": "flutter-clay",
+    "storage_bucket": "flutter-clay.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50519129268:android:1f06e76c2087133b24abe1",
+        "android_client_info": {
+          "package_name": "mk.ukim.finki.classly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3WPD2iUBXs_vpcxgZ3ooHnz3wz0uDkUU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
