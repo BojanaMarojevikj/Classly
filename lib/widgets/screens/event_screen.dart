@@ -1,10 +1,11 @@
+import 'package:classly/model/CalendarEvent.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class EventScreen extends StatefulWidget {
-  final Appointment event;
-  final Function(Appointment) onDelete;
-  final Function(Appointment, String, String, String, String) onEdit;
+  final CalendarEvent event;
+  final Function(CalendarEvent) onDelete;
+  final Function(CalendarEvent, String, String, String, String) onEdit;
 
   EventScreen({required this.event, required this.onDelete, required this.onEdit});
 
