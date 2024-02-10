@@ -1,15 +1,19 @@
 import 'package:classly/screens/splashscreen.dart';
+import 'package:classly/service/FirestoreService.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async{
-  WidgetsFlutterBinding .ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  final firestoreService = FirestoreService();
+  runApp(MyApp(firestoreService: firestoreService));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final FirestoreService firestoreService;
+
+  MyApp({required this.firestoreService});
 
   @override
   Widget build(BuildContext context) {
