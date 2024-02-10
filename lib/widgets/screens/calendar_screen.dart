@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import 'event_screen.dart';
+
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key, required this.title}) : super(key: key);
 
@@ -111,83 +113,13 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Future<void> _showEventDetailsDialog(Appointment event) async {
-    TextEditingController titleController = TextEditingController(text: event.subject);
-    TextEditingController dateController = TextEditingController(text: formatDate(event.startTime));
-    TextEditingController timeController = TextEditingController(text: formatTime(event.startTime));
-    TextEditingController durationController = TextEditingController(text: (event.endTime.difference(event.startTime).inHours).toString());
-
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Event Details'),
-          content: SingleChildScrollView(
-            child: IntrinsicHeight(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: titleController,
-                    decoration: InputDecoration(
-                      labelText: 'Event Title',
-                    ),
-                  ),
-                  SizedBox(height: 10.0),
-                  TextField(
-                    controller: dateController,
-                    decoration: InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
-                  ),
-                  SizedBox(height: 10.0),
-                  TextField(
-                    controller: timeController,
-                    decoration: InputDecoration(labelText: 'Time (HH:MM)'),
-                  ),
-                  SizedBox(height: 10.0),
-                  TextField(
-                    controller: durationController,
-                    decoration: InputDecoration(labelText: 'Duration (hours)'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _deleteEvent(event);
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Delete'),
-                  ),
-                  SizedBox(width: 5.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      _editEvent(
-                        event,
-                        titleController.text,
-                        dateController.text,
-                        timeController.text,
-                        durationController.text,
-                      );
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Save'),
-                  ),
-                  SizedBox(width: 5.0)
-                ],
-              ),
-            ),
-          ],
-        );
-      },
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventScreen(event: event, onDelete: _deleteEvent, onEdit: _editEvent),
+      ),
     );
   }
-
-
 
   void _editEvent(
       Appointment event,
