@@ -23,6 +23,24 @@ class _CalendarPageState extends State<CalendarPage> {
   final FirestoreService firestoreService = FirestoreService();
 
   @override
+  void initState() {
+    super.initState();
+    _loadEventsForCurrentDay(DateTime.now());
+  }
+
+  Future<void> _loadEventsForCurrentDay(DateTime date) async {
+    String formattedDate = formatDate(date);
+    List<CalendarEvent> eventsForCurrentDay =
+    await firestoreService.getEventsForDay(formattedDate);
+
+    setState(() {
+      appointments = eventsForCurrentDay;
+      events = MeetingDataSource(appointments);
+    });
+  }
+
+
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SfCalendar(
@@ -35,6 +53,9 @@ class _CalendarPageState extends State<CalendarPage> {
           } else if (details.targetElement == CalendarElement.calendarCell) {
             _showAddEventDialog(details.date!);
           }
+        },
+        onViewChanged: (ViewChangedDetails details) {
+          _loadEventsForCurrentDay(details.visibleDates[0]);
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -53,7 +74,7 @@ class _CalendarPageState extends State<CalendarPage> {
     TextEditingController timeController =
         TextEditingController(text: formatTime(selectedDate));
     TextEditingController durationController =
-        TextEditingController(text: '2'); // Default duration
+        TextEditingController(text: '2');
 
     return showDialog(
       context: context,
@@ -202,7 +223,7 @@ class _CalendarPageState extends State<CalendarPage> {
         name: 'Room A101',
         building: 'Main Building',
         floor: '1',
-        seats: [1, 2, 3, 4], // Example seats structure
+        seats: [1, 2, 3, 4],
       ),
       startTime: startTime,
       endTime: endTime,

@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:uuid/uuid.dart'; // Import the uuid package for generating unique IDs
+import 'package:uuid/uuid.dart';
 
 import 'Professor.dart';
 import 'Room.dart';
 
 class CalendarEvent extends Appointment {
+  @override
   final String id;
   final String title;
   final String description;
@@ -46,6 +48,17 @@ class CalendarEvent extends Appointment {
     );
   }
 
+  factory CalendarEvent.fromMap(Map<String, dynamic> map) {
+    return CalendarEvent(
+      id: map['id'],
+      title: map['title'] ?? '',
+      description: map['description'] ?? '',
+      professor: Professor.fromMap(map['professor'] ?? {}),
+      room: Room.fromMap(map['room'] ?? {}),
+      startTime: (map['startTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      endTime: (map['endTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
 
   @override
   List<Object?> get props => [id, startTime, endTime, title, description];

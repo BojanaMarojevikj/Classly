@@ -22,6 +22,15 @@ class Professor {
     );
   }
 
+  factory Professor.fromMap(Map<String, dynamic> map) {
+    return Professor(
+      id: map['id'],
+      firstName: map['firstName'],
+      lastName: map['lastName'],
+      email: map['email'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

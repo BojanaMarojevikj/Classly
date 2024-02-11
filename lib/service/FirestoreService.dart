@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../model/CalendarEvent.dart';
-import '../model/Professor.dart';
-import '../model/Room.dart';
+
 
 class FirestoreService {
   final CollectionReference calendarEventsCollection =
@@ -11,6 +8,7 @@ class FirestoreService {
 
   Future<void> saveCalendarEvent(CalendarEvent event) async {
     await calendarEventsCollection.doc(event.id).set({
+      'id': event.id,
       'title': event.title,
       'description': event.description,
       'professor': {
@@ -55,5 +53,21 @@ class FirestoreService {
       'startTime': event.startTime,
       'endTime': event.endTime,
     });
+  }
+
+  Future<List<CalendarEvent>> getEventsForDay(String formattedDate) async {
+    DateTime startOfDay = DateTime.parse(formattedDate);
+    DateTime endOfDay = startOfDay.add(Duration(hours: 23, minutes: 59, seconds: 59));
+
+    var querySnapshot = await calendarEventsCollection
+        .where('startTime', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('startTime', isLessThan: Timestamp.fromDate(endOfDay))
+        .get();
+
+    List<CalendarEvent> events = querySnapshot.docs
+        .map((doc) => CalendarEvent.fromMap(doc.data() as Map<String, dynamic>))
+        .toList();
+
+    return events;
   }
 }
