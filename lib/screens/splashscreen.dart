@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:classly/widgets/bottom_navigation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../service/AuthService.dart';
+import 'login_screen.dart';
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
 
@@ -9,15 +13,29 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
+  final AuthService _firebaseService = AuthService();
+
+
   @override
   void initState() {
     super.initState();
     Timer(
       Duration(seconds: 2),
-          () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => BottomNavigation()),
-      ),
+          () async {
+        User? user = FirebaseAuth.instance.currentUser;
+
+        if (user != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => BottomNavigation()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen(_firebaseService)),
+          );
+        }
+      },
     );
   }
 
