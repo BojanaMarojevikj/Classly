@@ -165,10 +165,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _fetchEnrolledCourses();
     for (Course enrolledCourse in _enrolledCourses) {
       int index = availableCoursesCopy.indexWhere(
-              (course) => course.courseId == enrolledCourse.courseId);
+            (course) => course.courseId == enrolledCourse.courseId,
+      );
       print('Index: $index');
       if (index != -1) {
-        availableCoursesCopy[index] = enrolledCourse;
+        _selectedCourses.add(enrolledCourse);
       }
     }
 
@@ -221,32 +222,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _enrollInCourses() {
-    if (_selectedCourses.isNotEmpty) {
-      if (_user != null) {
-        List<Map<String, String>> coursesData = _selectedCourses
-            .map((course) =>
-        {
-          'courseId': course.courseId,
-          'courseName': course.courseName,
-        })
-            .toList();
+    if (_user != null) {
+      List<Map<String, String>> coursesToEnroll = _selectedCourses
+          .map((course) => {
+        'courseId': course.courseId,
+        'courseName': course.courseName,
+      })
+          .toList();
 
-        FirebaseFirestore.instance.collection('custom_users')
-            .doc(_user!.uid)
-            .update({
-          'enrolledCourses': FieldValue.arrayUnion(coursesData),
-        })
-            .then((value) {
-          print('Courses enrolled successfully!');
-          _fetchEnrolledCourses();
-        }).catchError((error) {
-          print('Error enrolling in courses: $error');
-        });
-      }
+      List<Map<String, String>> coursesToDisenroll = _enrolledCourses
+          .where((course) => !_selectedCourses.contains(course))
+          .map((course) => {
+        'courseId': course.courseId,
+        'courseName': course.courseName,
+      })
+          .toList();
 
-      setState(() {
-        _selectedCourses = [];
+      FirebaseFirestore.instance.collection('custom_users').doc(_user!.uid).update({
+        'enrolledCourses': FieldValue.arrayUnion(coursesToEnroll),
+      }).then((value) {
+        print('Courses enrolled successfully!');
+        _fetchEnrolledCourses();
+      }).catchError((error) {
+        print('Error enrolling in courses: $error');
+      });
+
+      FirebaseFirestore.instance.collection('custom_users').doc(_user!.uid).update({
+        'enrolledCourses': FieldValue.arrayRemove(coursesToDisenroll),
+      }).then((value) {
+        print('Courses disenrolled successfully!');
+        _fetchEnrolledCourses();
+      }).catchError((error) {
+        print('Error disenrolling from courses: $error');
       });
     }
+
+    setState(() {
+      _selectedCourses = [];
+    });
   }
 }
