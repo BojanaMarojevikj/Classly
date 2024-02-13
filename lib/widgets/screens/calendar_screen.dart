@@ -1,12 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import '../../model/Course.dart';
 import 'event_screen.dart';
 
 import '../../model/CalendarEvent.dart';
 import '../../model/Professor.dart';
 import '../../model/Room.dart';
-import '../../service/FirestoreService.dart';
+import '../../service/CalendarEventService.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key, required this.title}) : super(key: key);
@@ -20,7 +22,7 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   List<CalendarEvent> appointments = [];
   MeetingDataSource? events;
-  final FirestoreService firestoreService = FirestoreService();
+  final CalendarEventService firestoreService = CalendarEventService();
 
   @override
   void initState() {
@@ -70,70 +72,108 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> _showAddEventDialog(DateTime selectedDate) async {
     TextEditingController titleController = TextEditingController();
     TextEditingController dateController =
-        TextEditingController(text: formatDate(selectedDate));
+    TextEditingController(text: formatDate(selectedDate));
     TextEditingController timeController =
-        TextEditingController(text: formatTime(selectedDate));
+    TextEditingController(text: formatTime(selectedDate));
     TextEditingController durationController =
-        TextEditingController(text: '2');
+    TextEditingController(text: '2');
+
+    Course? selectedCourse;
 
     return showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('Add Event'),
-          content: SingleChildScrollView(
-            child: IntrinsicHeight(
-              child: Column(
-                children: [
-                  TextField(
-                    controller: titleController,
-                    decoration: InputDecoration(
-                      labelText: 'Enter event title',
+        return FutureBuilder<List<Course>>(
+          future: _fetchAvailableCourses(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              List<Course> courses = snapshot.data!;
+
+              return AlertDialog(
+                title: Text('Add Event'),
+                content: SingleChildScrollView(
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: titleController,
+                          decoration: InputDecoration(
+                            labelText: 'Enter event title',
+                          ),
+                        ),
+                        SizedBox(height: 10.0),
+                        TextField(
+                          controller: dateController,
+                          decoration:
+                          InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
+                        ),
+                        SizedBox(height: 10.0),
+                        TextField(
+                          controller: timeController,
+                          decoration: InputDecoration(labelText: 'Time (HH:MM)'),
+                        ),
+                        TextField(
+                          controller: durationController,
+                          decoration:
+                          InputDecoration(labelText: 'Duration (hours)'),
+                        ),
+                        SizedBox(height: 10.0),
+                        DropdownButtonFormField<Course>(
+                          hint: Text('Select a Course'),
+                          value: selectedCourse,
+                          items: courses.map<DropdownMenuItem<Course>>((Course course) {
+                            return DropdownMenuItem<Course>(
+                              value: course,
+                              child: Text(course.courseName),
+                            );
+                          }).toList(),
+                          onChanged: (Course? newValue) {
+                            setState(() {
+                              selectedCourse = newValue;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                  TextField(
-                    controller: dateController,
-                    decoration: InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Cancel'),
                   ),
-                  SizedBox(height: 10.0),
-                  TextField(
-                    controller: timeController,
-                    decoration: InputDecoration(labelText: 'Time (HH:MM)'),
-                  ),
-                  TextField(
-                    controller: durationController,
-                    decoration: InputDecoration(labelText: 'Duration (hours)'),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (selectedCourse != null) {
+                        await _addEvent(
+                          selectedDate,
+                          titleController.text,
+                          dateController.text,
+                          timeController.text,
+                          durationController.text,
+                          selectedCourse!,
+                        );
+                        Navigator.of(context).pop();
+                      } else {
+                      }
+                    },
+                    child: Text('Add'),
                   ),
                 ],
-              ),
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await _addEvent(
-                  selectedDate,
-                  titleController.text,
-                  dateController.text,
-                  timeController.text,
-                  durationController.text,
-                );
-                Navigator.of(context).pop();
-              },
-              child: Text('Add'),
-            ),
-          ],
+              );
+            }
+          },
         );
       },
     );
   }
+
 
   Future<void> _showEventDetailsDialog(CalendarEvent event) async {
     Navigator.push(
@@ -146,12 +186,13 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Future<void> _addEvent(
-    DateTime selectedDate,
-    String title,
-    String date,
-    String time,
-    String duration,
-  ) async {
+      DateTime selectedDate,
+      String title,
+      String date,
+      String time,
+      String duration,
+      Course selectedCourse,
+      ) async {
     final DateTime newDateTime = DateTime.parse('$date $time');
     final DateTime startTime = DateTime(
       newDateTime.year,
@@ -160,8 +201,7 @@ class _CalendarPageState extends State<CalendarPage> {
       newDateTime.hour,
       newDateTime.minute,
     );
-    final DateTime endTime =
-        startTime.add(Duration(hours: int.parse(duration)));
+    final DateTime endTime = startTime.add(Duration(hours: int.parse(duration)));
 
     final newEvent = CalendarEvent.autogenerated(
       title: title,
@@ -181,6 +221,7 @@ class _CalendarPageState extends State<CalendarPage> {
       ),
       startTime: startTime,
       endTime: endTime,
+      course: selectedCourse,
     );
 
     await firestoreService.saveCalendarEvent(newEvent);
@@ -190,13 +231,15 @@ class _CalendarPageState extends State<CalendarPage> {
     });
   }
 
+
   Future<void> _editEvent(
-    CalendarEvent event,
-    String title,
-    String date,
-    String time,
-    String duration,
-  ) async {
+      CalendarEvent event,
+      String title,
+      String date,
+      String time,
+      String duration,
+      Course selectedCourse,
+      ) async {
     final DateTime newDateTime = DateTime.parse('$date $time');
     final DateTime startTime = DateTime(
       newDateTime.year,
@@ -205,8 +248,7 @@ class _CalendarPageState extends State<CalendarPage> {
       newDateTime.hour,
       newDateTime.minute,
     );
-    final DateTime endTime =
-        startTime.add(Duration(hours: int.parse(duration)));
+    final DateTime endTime = startTime.add(Duration(hours: int.parse(duration)));
 
     final editedEvent = CalendarEvent(
       id: event.id,
@@ -227,6 +269,7 @@ class _CalendarPageState extends State<CalendarPage> {
       ),
       startTime: startTime,
       endTime: endTime,
+      course: selectedCourse,
     );
 
     await firestoreService.updateCalendarEvent(editedEvent);
@@ -237,6 +280,7 @@ class _CalendarPageState extends State<CalendarPage> {
       events = MeetingDataSource(appointments);
     });
   }
+
 
   Future<void> _deleteEvent(CalendarEvent event) async {
     await firestoreService.deleteCalendarEvent(event.id);
@@ -252,6 +296,25 @@ class _CalendarPageState extends State<CalendarPage> {
 
   String formatTime(DateTime dateTime) {
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+Future<List<Course>> _fetchAvailableCourses() async {
+  try {
+    QuerySnapshot querySnapshot =
+    await FirebaseFirestore.instance.collection('courses').get();
+
+    List<Course> courses = querySnapshot.docs.map((DocumentSnapshot document) {
+      return Course(
+        courseId: document.id,
+        courseName: document['courseName'] ?? '',
+      );
+    }).toList();
+
+    return courses;
+  } catch (error) {
+    print('Error fetching courses: $error');
+    throw error;
   }
 }
 

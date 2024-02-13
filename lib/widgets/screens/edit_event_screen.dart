@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import '../../model/CalendarEvent.dart';
-
 class EditEventScreen extends StatefulWidget {
   final Appointment event;
 
@@ -62,21 +60,10 @@ class _EditEventScreenState extends State<EditEventScreen> {
   }
 
   void _saveChanges(BuildContext context) {
-    // Implement the logic to save changes and update the event
-    // Use the provided controllers to get the edited values
-    // Update the event data and navigate back to the EventScreen or CalendarPage
-
-    // Example:
     setState(() {
       widget.event.subject = titleController.text;
-
-      // Parse the entered date-time strings to DateTime objects
       widget.event.startTime = DateTime.parse(startTimeController.text);
       widget.event.endTime = DateTime.parse(endTimeController.text);
-
-      // Perform additional validation or logic if needed
-
-      // Navigate back to the EventScreen
       Navigator.pop(context);
     });
   }

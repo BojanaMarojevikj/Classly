@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/CalendarEvent.dart';
 
 
-class FirestoreService {
+class CalendarEventService {
   final CollectionReference calendarEventsCollection =
   FirebaseFirestore.instance.collection('calendar_events');
 
@@ -26,6 +26,10 @@ class FirestoreService {
       },
       'startTime': event.startTime,
       'endTime': event.endTime,
+      'course': {
+        'courseId': event.course.courseId,
+        'courseName': event.course.courseName,
+      },
     });
   }
 
@@ -52,6 +56,10 @@ class FirestoreService {
       },
       'startTime': event.startTime,
       'endTime': event.endTime,
+      'course': {
+        'courseId': event.course.courseId,
+        'courseName': event.course.courseName,
+      },
     });
   }
 

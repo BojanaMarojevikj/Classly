@@ -1,11 +1,13 @@
 import 'package:classly/model/CalendarEvent.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
+
+import '../../model/Course.dart';
 
 class EventScreen extends StatefulWidget {
   final CalendarEvent event;
   final Function(CalendarEvent) onDelete;
-  final Function(CalendarEvent, String, String, String, String) onEdit;
+  final Function(CalendarEvent, String, String, String, String, Course) onEdit;
 
   EventScreen({required this.event, required this.onDelete, required this.onEdit});
 
@@ -14,6 +16,16 @@ class EventScreen extends StatefulWidget {
 }
 
 class _EventScreenState extends State<EventScreen> {
+  List<Course> _availableCourses = [];
+  Course? _selectedCourse;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCourse = widget.event.course;
+    _fetchAvailableCourses();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +35,7 @@ class _EventScreenState extends State<EventScreen> {
           IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
-              _editEvent(context);
+              _editEvent(context, _availableCourses, widget.event, _selectedCourse);
             },
           ),
         ],
@@ -40,6 +52,9 @@ class _EventScreenState extends State<EventScreen> {
             Text('Time: ${formatTime(widget.event.startTime)}'),
             SizedBox(height: 10.0),
             Text('Duration: ${widget.event.endTime.difference(widget.event.startTime).inHours} hours'),
+            SizedBox(height: 10.0),
+            if (_selectedCourse != null)
+              Text('Course: ${_selectedCourse!.courseName}'),
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
@@ -53,6 +68,7 @@ class _EventScreenState extends State<EventScreen> {
     );
   }
 
+
   void _deleteEvent(BuildContext context) {
     showDialog(
       context: context,
@@ -63,7 +79,7 @@ class _EventScreenState extends State<EventScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the confirmation dialog
+                Navigator.pop(context);
               },
               child: Text('Cancel'),
             ),
@@ -81,11 +97,11 @@ class _EventScreenState extends State<EventScreen> {
     );
   }
 
-  void _editEvent(BuildContext context) {
-    TextEditingController titleController = TextEditingController(text: widget.event.subject);
-    TextEditingController dateController = TextEditingController(text: formatDate(widget.event.startTime));
-    TextEditingController timeController = TextEditingController(text: formatTime(widget.event.startTime));
-    TextEditingController durationController = TextEditingController(text: widget.event.endTime.difference(widget.event.startTime).inHours.toString());
+  void _editEvent(BuildContext context, List<Course> availableCourses, CalendarEvent event, Course? selectedCourse) {
+    TextEditingController titleController = TextEditingController(text: event.subject);
+    TextEditingController dateController = TextEditingController(text: formatDate(event.startTime));
+    TextEditingController timeController = TextEditingController(text: formatTime(event.startTime));
+    TextEditingController durationController = TextEditingController(text: event.endTime.difference(event.startTime).inHours.toString());
 
     showDialog(
       context: context,
@@ -112,6 +128,22 @@ class _EventScreenState extends State<EventScreen> {
                     controller: timeController,
                     decoration: InputDecoration(labelText: 'Time (HH:MM)'),
                   ),
+                  SizedBox(height: 10.0),
+                  DropdownButtonFormField<Course>(
+                    value: _selectedCourse,
+                    items: availableCourses.map((Course course) {
+                      return DropdownMenuItem<Course>(
+                        value: course,
+                        child: Text(course.courseName),
+                      );
+                    }).toList(),
+                    onChanged: (Course? newValue) {
+                      setState(() {
+                        _selectedCourse = newValue;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 10.0),
                   TextField(
                     controller: durationController,
                     decoration: InputDecoration(labelText: 'Duration (hours)'),
@@ -123,20 +155,21 @@ class _EventScreenState extends State<EventScreen> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // Close the edit dialog
+                Navigator.pop(context);
               },
               child: Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
                 widget.onEdit(
-                  widget.event,
+                  event,
                   titleController.text,
                   dateController.text,
                   timeController.text,
                   durationController.text,
+                  selectedCourse!,
                 );
-                Navigator.pop(context); // Close the edit dialog
+                Navigator.pop(context);
               },
               child: Text('Save'),
             ),
@@ -145,6 +178,30 @@ class _EventScreenState extends State<EventScreen> {
       },
     );
   }
+
+
+
+  void _fetchAvailableCourses() {
+    FirebaseFirestore.instance.collection('courses').get().then((
+        QuerySnapshot querySnapshot,
+        ) {
+      List<Course> courses = [];
+      querySnapshot.docs.forEach((DocumentSnapshot document) {
+        Course course = Course(
+          courseId: document.id,
+          courseName: document['courseName'] ?? '',
+        );
+        courses.add(course);
+      });
+
+      setState(() {
+        _availableCourses = courses;
+      });
+    }).catchError((error) {
+      print('Error fetching courses: $error');
+    });
+  }
+
 
   String formatDate(DateTime dateTime) {
     return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';

@@ -1,18 +1,18 @@
 import 'package:classly/screens/splashscreen.dart';
-import 'package:classly/service/FirestoreService.dart';
+import 'package:classly/service/CalendarEventService.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  final firestoreService = FirestoreService();
+  final firestoreService = CalendarEventService();
 
   runApp(MyApp(firestoreService: firestoreService));
 }
 
 class MyApp extends StatelessWidget {
-  final FirestoreService firestoreService;
+  final CalendarEventService firestoreService;
 
   MyApp({required this.firestoreService});
 

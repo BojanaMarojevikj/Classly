@@ -7,6 +7,13 @@ class Course {
     required this.courseName,
   });
 
+  factory Course.fromMap(Map<String, dynamic> map) {
+    return Course(
+      courseId: map['courseId'] ?? '',
+      courseName: map['courseName'] ?? '',
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

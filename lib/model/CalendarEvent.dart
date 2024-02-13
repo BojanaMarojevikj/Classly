@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import 'Professor.dart';
 import 'Room.dart';
+import 'Course.dart';
 
 class CalendarEvent extends Appointment {
   @override
@@ -12,6 +13,7 @@ class CalendarEvent extends Appointment {
   final String description;
   final Professor professor;
   final Room room;
+  final Course course;
 
   CalendarEvent({
     required this.id,
@@ -19,6 +21,7 @@ class CalendarEvent extends Appointment {
     required this.description,
     required this.professor,
     required this.room,
+    required this.course,
     required DateTime startTime,
     required DateTime endTime,
   }) : super(
@@ -32,6 +35,7 @@ class CalendarEvent extends Appointment {
     required String description,
     required Professor professor,
     required Room room,
+    required Course course,
     required DateTime startTime,
     required DateTime endTime,
   }) {
@@ -43,6 +47,7 @@ class CalendarEvent extends Appointment {
       description: description,
       professor: professor,
       room: room,
+      course: course,
       startTime: startTime,
       endTime: endTime,
     );
@@ -55,6 +60,7 @@ class CalendarEvent extends Appointment {
       description: map['description'] ?? '',
       professor: Professor.fromMap(map['professor'] ?? {}),
       room: Room.fromMap(map['room'] ?? {}),
+      course: Course.fromMap(map['course'] ?? {}),
       startTime: (map['startTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
       endTime: (map['endTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
