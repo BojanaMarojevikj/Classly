@@ -7,6 +7,7 @@ class CustomUser {
   final String email;
   final String firstName;
   final String lastName;
+  final String photoURL;
   List<Course> enrolledCourses;
 
   CustomUser({
@@ -14,6 +15,7 @@ class CustomUser {
     required this.email,
     required this.firstName,
     required this.lastName,
+    required this.photoURL,
     List<Course>? enrolledCourses,
   }) : enrolledCourses = enrolledCourses ?? [];
 
@@ -23,6 +25,7 @@ class CustomUser {
       email: user.email ?? '',
       firstName: user.displayName?.split(' ')[0] ?? '',
       lastName: user.displayName?.split(' ')[1] ?? '',
+      photoURL: user.photoURL ?? '',
     );
   }
 
