@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../model/CustomUser.dart';
 import '../../model/Course.dart';
@@ -14,11 +17,13 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _firebaseService = AuthService();
+  final ImagePicker _imagePicker = ImagePicker();
 
   late CustomUser? _user;
   List<Course> _enrolledCourses = [];
   List<Course> _availableCourses = [];
   List<Course> _selectedCourses = [];
+  File? _profileImage;
 
   @override
   void initState() {
@@ -116,6 +121,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            GestureDetector(
+              onTap: _pickProfileImage, // Call the method when the user taps on the image
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: _profileImage != null
+                    ? FileImage(_profileImage!)
+                    : NetworkImage('https://icons.iconarchive.com/icons/papirus-team/papirus-status/512/avatar-default-icon.png') as ImageProvider,
+              ),
+            ),
+            SizedBox(height: 16),
             Text(
               'User Name:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -159,6 +174,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
+  Future<void> _pickProfileImage() async {
+    final pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery, // or ImageSource.camera for the camera
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+    }
+  }
+
 
   Future<void> _showEnrollmentDialog(BuildContext context) async {
     List<Course> availableCoursesCopy = List.from(_availableCourses);
