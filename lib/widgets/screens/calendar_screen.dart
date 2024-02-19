@@ -9,6 +9,7 @@ import '../../model/CalendarEvent.dart';
 import '../../model/Professor.dart';
 import '../../model/Room.dart';
 import '../../service/CalendarEventService.dart';
+import '../../service/NotificationsService.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key, required this.title}) : super(key: key);
@@ -23,6 +24,7 @@ class _CalendarPageState extends State<CalendarPage> {
   List<CalendarEvent> appointments = [];
   MeetingDataSource? events;
   final CalendarEventService firestoreService = CalendarEventService();
+  final NotificationsService notificationsService = NotificationsService();
 
   @override
   void initState() {
@@ -229,6 +231,7 @@ class _CalendarPageState extends State<CalendarPage> {
       appointments.add(newEvent);
       events = MeetingDataSource(appointments);
     });
+    await notificationsService.scheduleEventNotification(newEvent.startTime, newEvent.title);
   }
 
 
@@ -279,6 +282,7 @@ class _CalendarPageState extends State<CalendarPage> {
       event.endTime = endTime;
       events = MeetingDataSource(appointments);
     });
+    await notificationsService.scheduleEventNotification(event.startTime, event.title);
   }
 
 
