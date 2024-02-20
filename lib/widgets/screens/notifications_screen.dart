@@ -20,7 +20,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _loadNotifications() async {
-    List<AppNotification> fetchedNotifications = await _fetchNotifications();
+    //List<AppNotification> fetchedNotifications = await _fetchNotifications();
+    List<AppNotification> fetchedNotifications = await notificationsService.getNotificationsFromFirebase();
 
     setState(() {
       notifications = fetchedNotifications;

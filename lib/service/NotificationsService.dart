@@ -1,3 +1,4 @@
+import 'package:classly/model/AppNotification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -59,19 +60,13 @@ class NotificationsService {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getNotificationsFromFirebase() async {
-    try {
-      QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('notifications').get();
+  Future<List<AppNotification>> getNotificationsFromFirebase() async {
+      var querySnapshot = await notificationsCollection.get();
 
-      List<Map<String, dynamic>> notifications = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
+      List<AppNotification> notifications = querySnapshot.docs
+          .map((doc) => AppNotification.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
 
       return notifications;
-    } catch (error) {
-      print('Error fetching notifications from Firebase: $error');
-      throw error;
-    }
   }
 }

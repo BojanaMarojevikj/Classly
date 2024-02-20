@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
 class AppNotification {
@@ -23,11 +24,19 @@ class AppNotification {
   }
 
   factory AppNotification.fromMap(Map<String, dynamic> map) {
+    DateTime dateTime;
+    if (map['dateTime'] is Timestamp) {
+      dateTime = (map['dateTime'] as Timestamp).toDate();
+    } else if (map['dateTime'] is String) {
+      dateTime = DateTime.parse(map['dateTime']);
+    } else {
+      dateTime = DateTime.now();
+    }
     return AppNotification(
-      id: map['id'],
-      title: map['title'],
-      body: map['body'],
-      dateTime: DateTime.parse(map['dateTime'] ?? ''),
+      id: map['id'] ?? '',
+      title: map['title'] ?? '',
+      body: map['body'] ?? '',
+      dateTime: dateTime,
     );
   }
 
