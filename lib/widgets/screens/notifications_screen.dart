@@ -1,13 +1,73 @@
 import 'package:flutter/material.dart';
+import '../../model/AppNotification.dart';
+import '../../service/NotificationsService.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
+  const NotificationsScreen({Key? key}) : super(key: key);
+
+  @override
+  _NotificationsScreenState createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  List<AppNotification> notifications = [];
+  final NotificationsService notificationsService = NotificationsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotifications();
+  }
+
+  Future<void> _loadNotifications() async {
+    List<AppNotification> fetchedNotifications = await _fetchNotifications();
+
+    setState(() {
+      notifications = fetchedNotifications;
+    });
+  }
+
+  Future<List<AppNotification>> _fetchNotifications() async {
+    // fetch notifications from Firebase
+
+    List<AppNotification> dummyNotifications = [
+      AppNotification(
+        id: '1',
+        title: 'Notification 1',
+        body: 'Body 1',
+        dateTime: DateTime.now(),
+      ),
+      AppNotification(
+        id: '2',
+        title: 'Notification 2',
+        body: 'Body 2',
+        dateTime: DateTime.now().subtract(Duration(days: 1)),
+      ),
+      AppNotification(
+        id: '3',
+        title: 'Notification 3',
+        body: 'Body 3',
+        dateTime: DateTime.now().subtract(Duration(days: 2)),
+      ),
+      AppNotification(
+        id: '4',
+        title: 'Notification 4',
+        body: 'Body 4',
+        dateTime: DateTime.now().subtract(Duration(days: 2)),
+      ),
+    ];
+
+    return dummyNotifications;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Notifications Screen'),
       ),
-      body: Center(
+      body: notifications.isEmpty
+          ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -23,7 +83,71 @@ class NotificationsScreen extends StatelessWidget {
             ),
           ],
         ),
+      )
+          : ListView.builder(
+        itemCount: notifications.length,
+        itemBuilder: (context, index) {
+          var groupedNotifications = groupNotificationsByDate(notifications);
+          var dates = groupedNotifications.keys.toList()..sort((a, b) => b.compareTo(a));
+
+          if (index < dates.length) {
+            var date = dates[index];
+            var dateNotifications = groupedNotifications[date]!;
+
+            return Column(
+              children: [
+                ListTile(
+                  title: Text(
+                    formatDate(date),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+                ...dateNotifications.map((notification) {
+                  return Card(
+                    elevation: 2.0,
+                    color: Colors.blue,
+                    margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.notifications_active,
+                        color: Colors.white,
+                      ),
+                      title: Text(notification.title, style: TextStyle(color: Colors.white)),
+                      subtitle: Text(notification.body, style: TextStyle(color: Colors.white)),
+                    ),
+                  );
+                }),
+              ],
+            );
+          } else {
+            return SizedBox.shrink();
+          }
+        },
       ),
     );
+  }
+
+  String formatDate(DateTime dateTime) {
+    return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${dateTime.year}';
+  }
+
+  Map<DateTime, List<AppNotification>> groupNotificationsByDate(List<AppNotification> notifications) {
+    Map<DateTime, List<AppNotification>> groupedNotifications = {};
+
+    for (var notification in notifications) {
+      var date = DateTime(notification.dateTime.year, notification.dateTime.month, notification.dateTime.day);
+
+      if (groupedNotifications.containsKey(date)) {
+        groupedNotifications[date]!.add(notification);
+      } else {
+        groupedNotifications[date] = [notification];
+      }
+    }
+
+    return groupedNotifications;
   }
 }
