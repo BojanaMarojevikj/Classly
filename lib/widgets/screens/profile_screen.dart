@@ -60,6 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Course course = Course(
                 courseId: courseData['courseId'] ?? '',
                 courseName: courseData['courseName'] ?? '',
+                  courseFullName: courseData['courseFullName'] ?? ''
               );
               enrolledCourses.add(course);
             }
@@ -84,6 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Course course = Course(
           courseId: document.id,
           courseName: document['courseName'] ?? '',
+            courseFullName: document['courseFullName'] ?? ''
         );
         courses.add(course);
       });
@@ -158,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(height: 8),
             for (Course course in _enrolledCourses)
               Text(
-                course.courseName,
+                course.courseFullName,
                 style: TextStyle(fontSize: 16),
               ),
             SizedBox(height: 16),

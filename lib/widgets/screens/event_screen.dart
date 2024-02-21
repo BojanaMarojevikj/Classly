@@ -190,6 +190,7 @@ class _EventScreenState extends State<EventScreen> {
         Course course = Course(
           courseId: document.id,
           courseName: document['courseName'] ?? '',
+            courseFullName: document['courseFullName'] ?? ''
         );
         courses.add(course);
       });
