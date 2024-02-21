@@ -29,6 +29,7 @@ class CalendarEventService {
       'course': {
         'courseId': event.course.courseId,
         'courseName': event.course.courseName,
+        'courseFullName':event.course.courseFullName
       },
     });
   }
@@ -59,6 +60,7 @@ class CalendarEventService {
       'course': {
         'courseId': event.course.courseId,
         'courseName': event.course.courseName,
+        'courseFullName': event.course.courseFullName,
       },
     });
   }

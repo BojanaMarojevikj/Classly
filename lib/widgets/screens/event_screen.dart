@@ -1,8 +1,10 @@
 import 'package:classly/model/CalendarEvent.dart';
+import 'package:classly/widgets/screens/room_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../model/Course.dart';
+import '../../model/Room.dart';
 
 class EventScreen extends StatefulWidget {
   final CalendarEvent event;
@@ -92,8 +94,29 @@ class _EventScreenState extends State<EventScreen> {
             ),
             SizedBox(height: 10.0),
             Text(
-              'Location: ${widget.event.room.name}, ${widget.event.room.building}',
+              'Location: ',
               style: TextStyle(fontSize: 20.0),
+            ),
+            SizedBox(height: 10.0),
+            ElevatedButton(
+              onPressed: () {
+                _navigateToRoomInfoScreen(widget.event.room);
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+                onPrimary: Colors.lightBlue,
+                side: BorderSide(color: Colors.lightBlue, width: 2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  '${widget.event.room.name}',
+                  style: TextStyle(fontSize: 16.0, color: Colors.lightBlue),
+                ),
+              ),
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
@@ -173,7 +196,7 @@ class _EventScreenState extends State<EventScreen> {
                   ),
                   SizedBox(height: 10.0),
                   DropdownButtonFormField<Course>(
-                    value: _selectedCourse,
+                    //value: _selectedCourse,
                     items: availableCourses.map((Course course) {
                       return DropdownMenuItem<Course>(
                         value: course,
@@ -233,7 +256,7 @@ class _EventScreenState extends State<EventScreen> {
         Course course = Course(
           courseId: document.id,
           courseName: document['courseName'] ?? '',
-            courseFullName: document['courseFullName'] ?? ''
+          courseFullName: document['courseFullName'] ?? '',
         );
         courses.add(course);
       });
@@ -253,5 +276,14 @@ class _EventScreenState extends State<EventScreen> {
 
   String formatTime(DateTime dateTime) {
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  void _navigateToRoomInfoScreen(Room room) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RoomInfoScreen(room: room),
+      ),
+    );
   }
 }
