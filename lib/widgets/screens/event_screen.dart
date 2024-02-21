@@ -43,24 +43,67 @@ class _EventScreenState extends State<EventScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Event Title: ${widget.event.subject}'),
+            Container(
+              padding: EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Text(
+                '${widget.event.subject}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Text(
+              'Class Details:',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             SizedBox(height: 10.0),
-            Text('Date: ${formatDate(widget.event.startTime)}'),
+            Text(
+              'Time: ${formatTime(widget.event.startTime)}',
+              style: TextStyle(fontSize: 20.0),
+            ),
             SizedBox(height: 10.0),
-            Text('Time: ${formatTime(widget.event.startTime)}'),
-            SizedBox(height: 10.0),
-            Text('Duration: ${widget.event.endTime.difference(widget.event.startTime).inHours} hours'),
+            Text(
+              'Duration: ${widget.event.endTime.difference(widget.event.startTime).inHours} hours',
+              style: TextStyle(fontSize: 20.0),
+            ),
             SizedBox(height: 10.0),
             if (_selectedCourse != null)
-              Text('Course: ${_selectedCourse!.courseName}'),
+              Text(
+                'Course: ${_selectedCourse!.courseName}',
+                style: TextStyle(fontSize: 20.0),
+              ),
+            SizedBox(height: 10.0),
+            Text(
+              'Professor: ${widget.event.professor.firstName} ${widget.event.professor.lastName}',
+              style: TextStyle(fontSize: 20.0),
+            ),
+            SizedBox(height: 10.0),
+            Text(
+              'Location: ${widget.event.room.name}, ${widget.event.room.building}',
+              style: TextStyle(fontSize: 20.0),
+            ),
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 _deleteEvent(context);
               },
-              child: Text('Delete Event'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.red,
+              ),
+              child: Text('Delete Event', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
