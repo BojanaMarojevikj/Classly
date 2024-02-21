@@ -20,7 +20,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _loadNotifications() async {
-    //List<AppNotification> fetchedNotifications = await _fetchNotifications();
     List<AppNotification> fetchedNotifications = await notificationsService.getNotificationsFromFirebase();
 
     setState(() {
@@ -28,38 +27,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     });
   }
 
-  Future<List<AppNotification>> _fetchNotifications() async {
-    // fetch notifications from Firebase
-
-    List<AppNotification> dummyNotifications = [
-      AppNotification(
-        id: '1',
-        title: 'Notification 1',
-        body: 'Body 1',
-        dateTime: DateTime.now(),
-      ),
-      AppNotification(
-        id: '2',
-        title: 'Notification 2',
-        body: 'Body 2',
-        dateTime: DateTime.now().subtract(Duration(days: 1)),
-      ),
-      AppNotification(
-        id: '3',
-        title: 'Notification 3',
-        body: 'Body 3',
-        dateTime: DateTime.now().subtract(Duration(days: 2)),
-      ),
-      AppNotification(
-        id: '4',
-        title: 'Notification 4',
-        body: 'Body 4',
-        dateTime: DateTime.now().subtract(Duration(days: 2)),
-      ),
-    ];
-
-    return dummyNotifications;
-  }
 
   @override
   Widget build(BuildContext context) {

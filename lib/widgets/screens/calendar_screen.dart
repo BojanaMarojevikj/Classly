@@ -312,6 +312,7 @@ Future<List<Course>> _fetchAvailableCourses() async {
       return Course(
         courseId: document.id,
         courseName: document['courseName'] ?? '',
+        courseFullName: document['courseFullName'] ?? ''
       );
     }).toList();
 

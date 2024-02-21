@@ -87,6 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Course course = Course(
                 courseId: courseData['courseId'] ?? '',
                 courseName: courseData['courseName'] ?? '',
+                  courseFullName: courseData['courseFullName'] ?? ''
               );
               enrolledCourses.add(course);
             }
@@ -111,6 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Course course = Course(
           courseId: document.id,
           courseName: document['courseName'] ?? '',
+            courseFullName: document['courseFullName'] ?? ''
         );
         courses.add(course);
       });
@@ -145,48 +147,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             GestureDetector(
               onTap: _showImageSourceOptions, // Call the method when the user taps on the image
               child: CircleAvatar(
-                radius: 50,
+                radius: 70,
                 backgroundImage: _profileImage != null
                     ? MemoryImage(_profileImage!)
                     : NetworkImage('https://icons.iconarchive.com/icons/papirus-team/papirus-status/512/avatar-default-icon.png') as ImageProvider,
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 30),
             Text(
-              'User Name:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Name:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue,
+              ),
             ),
             SizedBox(height: 8),
             Text(
               _user?.getFullName() ?? 'No name available',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 20),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 16),
             const Text(
-              'User Email:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Email:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             SizedBox(height: 8),
             Text(
               _user?.email ?? 'No email available',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 20),
             ),
             SizedBox(height: 16),
             Text(
               'Enrolled Courses:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             SizedBox(height: 8),
             for (Course course in _enrolledCourses)
               Text(
-                course.courseName,
-                style: TextStyle(fontSize: 16),
+                course.courseFullName,
+                style: TextStyle(fontSize: 20),
               ),
             SizedBox(height: 16),
           ],
