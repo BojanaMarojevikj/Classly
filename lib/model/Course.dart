@@ -24,4 +24,11 @@ class Course {
 
   @override
   int get hashCode => courseId.hashCode ^ courseName.hashCode;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'courseId': courseId,
+      'courseName': courseName,
+    };
+  }
 }
