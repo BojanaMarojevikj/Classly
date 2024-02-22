@@ -103,8 +103,8 @@ class _EventScreenState extends State<EventScreen> {
                 _navigateToRoomInfoScreen(widget.event.room);
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.white,
-                onPrimary: Colors.lightBlue,
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.lightBlue,
                 side: BorderSide(color: Colors.lightBlue, width: 2),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
