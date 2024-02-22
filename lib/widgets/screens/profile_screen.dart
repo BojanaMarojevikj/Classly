@@ -34,39 +34,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _updateUser();
+    // _updateUser();
     _fetchEnrolledCourses();
     _fetchAvailableCourses();
     _auth.authStateChanges().listen((User? user) {
-      _updateUser();
     });
   }
 
 
-  void _updateUser() async {
-    User? currentUser = _auth.currentUser;
-    if (currentUser != null) {
-      _user = CustomUser.fromFirebaseUser(currentUser);
-
-      try {
-        DocumentSnapshot documentSnapshot =
-        await _firestore.collection('custom_users').doc(_user!.uid).get();
-
-        if (documentSnapshot.exists) {
-          String? profileImageUrl = documentSnapshot['profileImageUrl'];
-
-          if (profileImageUrl != null) {
-            http.Response response = await http.get(Uri.parse(profileImageUrl));
-            setState(() {
-              _profileImage = Uint8List.fromList(response.bodyBytes);
-            });
-          }
-        }
-      } catch (error) {
-        print('Error loading profile image: $error');
-      }
-    }
-  }
+  // void _updateUser() async {
+  //   User? currentUser = _auth.currentUser;
+  //   if (currentUser != null) {
+  //     _user = CustomUser.fromFirebaseUser(currentUser);
+  //
+  //     try {
+  //       DocumentSnapshot documentSnapshot =
+  //       await _firestore.collection('custom_users').doc(_user!.uid).get();
+  //
+  //       if (documentSnapshot.exists) {
+  //         String? profileImageUrl = documentSnapshot['profileImageUrl'];
+  //
+  //         if (profileImageUrl != null) {
+  //           http.Response response = await http.get(Uri.parse(profileImageUrl));
+  //           setState(() {
+  //             _profileImage = Uint8List.fromList(response.bodyBytes);
+  //           });
+  //         }
+  //       }
+  //     } catch (error) {
+  //       print('Error loading profile image: $error');
+  //     }
+  //   }
+  // }
 
 
 
@@ -150,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: _showImageSourceOptions, // Call the method when the user taps on the image
+              onTap: _showImageSourceOptions,
               child: CircleAvatar(
                 radius: 70,
                 backgroundImage: _profileImage != null
@@ -242,7 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return;
       }
 
-      await _uploadProfileImageAndSetUser(File(pickedFile.path));
+      // await _uploadProfileImageAndSetUser(File(pickedFile.path));
     } catch (error) {
       print('Error picking image from camera: $error');
     }
@@ -255,81 +254,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
 
       if (pickedFile == null) {
-        return; // User canceled image picking
+        return;
       }
 
-      await _uploadProfileImageAndSetUser(File(pickedFile.path));
+      // await _uploadProfileImageAndSetUser(File(pickedFile.path));
     } catch (error) {
       print('Error picking image from gallery: $error');
     }
   }
 
-  Future<void> _uploadProfileImageAndSetUser(File imageFile) async {
-    try {
-      if (_user != null) {
-        // Upload image to storage
-        String imageUrl = await _uploadProfileImageToStorage(imageFile);
+  // Future<void> _uploadProfileImageAndSetUser(File imageFile) async {
+  //   try {
+  //     if (_user != null) {
+  //       String imageUrl = await _uploadProfileImageToStorage(imageFile);
+  //
+  //       await _updateUserProfileImage(imageUrl);
+  //
+  //       setState(() {
+  //         _user!.photoURL = imageUrl;
+  //       });
+  //
+  //       setState(() {
+  //         _profileImage = MemoryImage(imageFile.readAsBytesSync()) as Uint8List?;
+  //       });
+  //
+  //       print('Profile image uploaded and user profile updated');
+  //     } else {
+  //       print('User object is null.');
+  //     }
+  //   } catch (error) {
+  //     print('Error uploading profile image: $error');
+  //   }
+  // }
 
-        // Update user profile in Firestore
-        await _updateUserProfileImage(imageUrl);
+  // Future<String> _uploadProfileImageToStorage(File imageFile) async {
+  //   try {
+  //     String fileName = 'profile_images/${_user!.uid}.png';
+  //     print('Storage Path: $fileName');
+  //
+  //     Reference storageReference =
+  //     FirebaseStorage.instance.ref().child(fileName);
+  //
+  //     UploadTask uploadTask = storageReference.putFile(imageFile);
+  //     await uploadTask.whenComplete(() => print('Profile image uploaded'));
+  //
+  //     return await storageReference.getDownloadURL();
+  //   } catch (error) {
+  //     print('Error uploading profile image to storage: $error');
+  //     throw error; // Rethrow the error to handle it in the calling function
+  //   }
+  // }
 
-        // Update the local user object
-        setState(() {
-          _user!.photoURL = imageUrl;
-        });
-
-        // Update the profile image
-        setState(() {
-          _profileImage = MemoryImage(imageFile.readAsBytesSync()) as Uint8List?;
-        });
-
-        print('Profile image uploaded and user profile updated');
-      } else {
-        print('User object is null.');
-      }
-    } catch (error) {
-      print('Error uploading profile image: $error');
-    }
-  }
-
-  Future<String> _uploadProfileImageToStorage(File imageFile) async {
-    try {
-      String fileName = 'profile_images/${_user!.uid}.png';
-      print('Storage Path: $fileName');
-
-      Reference storageReference =
-      FirebaseStorage.instance.ref().child(fileName);
-
-      UploadTask uploadTask = storageReference.putFile(imageFile);
-      await uploadTask.whenComplete(() => print('Profile image uploaded'));
-
-      return await storageReference.getDownloadURL();
-    } catch (error) {
-      print('Error uploading profile image to storage: $error');
-      throw error; // Rethrow the error to handle it in the calling function
-    }
-  }
-
-  Future<void> _updateUserProfileImage(String imageUrl) async {
-    try {
-      User? currentUser = FirebaseAuth.instance.currentUser;
-
-      if (currentUser != null) {
-        DocumentReference userReference =
-        FirebaseFirestore.instance.collection('custom_users').doc(currentUser.uid);
-
-        // Update the user document with the profile image URL
-        await userReference.update({
-          'profileImageUrl': imageUrl,
-        });
-
-        print('User profile image URL updated successfully.');
-      }
-    } catch (error) {
-      print('Error updating user profile image: $error');
-      throw error; // Rethrow the error to handle it in the calling function
-    }
-  }
+  // Future<void> _updateUserProfileImage(String imageUrl) async {
+  //   try {
+  //     User? currentUser = FirebaseAuth.instance.currentUser;
+  //
+  //     if (currentUser != null) {
+  //       DocumentReference userReference =
+  //       FirebaseFirestore.instance.collection('custom_users').doc(currentUser.uid);
+  //
+  //       // Update the user document with the profile image URL
+  //       await userReference.update({
+  //         'profileImageUrl': imageUrl,
+  //       });
+  //
+  //       print('User profile image URL updated successfully.');
+  //     }
+  //   } catch (error) {
+  //     print('Error updating user profile image: $error');
+  //     throw error; // Rethrow the error to handle it in the calling function
+  //   }
+  // }
 
 
 

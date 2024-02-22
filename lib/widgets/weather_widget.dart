@@ -69,9 +69,9 @@ class _WeatherWidgetState extends State<WeatherWidget> {
           if (_temperature != null)
             Text(
               '${_temperature!.toStringAsFixed(0)}°C',
-              style: TextStyle(fontSize: 14.0, color: Colors.black),
+              style: TextStyle(fontSize: 24.0, color: Colors.black),
             ),
-          SizedBox(width: 4.0),
+          SizedBox(width: 14.0),
           if (_weatherIcon != null)
             Container(
               decoration: BoxDecoration(
@@ -85,7 +85,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 height: 30.0,
               ),
             ),
-          SizedBox(width: 6.0),
+          SizedBox(width: 20.0),
         ],
       );
   }

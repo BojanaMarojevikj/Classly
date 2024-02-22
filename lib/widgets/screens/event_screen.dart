@@ -101,7 +101,7 @@ class _EventScreenState extends State<EventScreen> {
                 _deleteEvent(context);
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.red,
+                backgroundColor: Colors.red,
               ),
               child: Text('Delete Event', style: TextStyle(color: Colors.white)),
             ),
