@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-import '../../model/CustomUser.dart';
-import '../../model/Course.dart';
-import '../../screens/login_screen.dart';
-import '../../service/AuthService.dart';
+import '../model/CustomUser.dart';
+import '../model/Course.dart';
+import 'login_screen.dart';
+import '../service/AuthService.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -297,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return await storageReference.getDownloadURL();
     } catch (error) {
       print('Error uploading profile image to storage: $error');
-      return ''; // Return an empty string or handle it according to your needs
+      return '';
     }
   }
 
@@ -308,8 +308,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (currentUser != null) {
         DocumentReference userReference =
         FirebaseFirestore.instance.collection('custom_users').doc(currentUser.uid);
-
-        // Update the user document with the profile image URL
         await userReference.update({
           'profileImageUrl': imageUrl,
         });
@@ -318,7 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (error) {
       print('Error updating user profile image: $error');
-      throw error; // Rethrow the error to handle it in the calling function
+      throw error;
     }
   }
 

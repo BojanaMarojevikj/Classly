@@ -2,15 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import '../../model/Course.dart';
-import '../weather_widget.dart';
+import '../model/Course.dart';
+import '../widgets/weather_widget.dart';
 import 'event_screen.dart';
 
-import '../../model/CalendarEvent.dart';
-import '../../model/Professor.dart';
-import '../../model/Room.dart';
-import '../../service/CalendarEventService.dart';
-import '../../service/NotificationsService.dart';
+import '../model/CalendarEvent.dart';
+import '../model/Professor.dart';
+import '../model/Room.dart';
+import '../service/CalendarEventService.dart';
+import '../service/NotificationsService.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key, required this.title}) : super(key: key);

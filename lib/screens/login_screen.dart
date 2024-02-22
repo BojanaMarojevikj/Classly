@@ -3,7 +3,7 @@ import 'package:classly/service/AuthService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/bottom_navigation.dart';
+import 'bottom_navigation.dart';
 
 
 class LoginScreen extends StatefulWidget {

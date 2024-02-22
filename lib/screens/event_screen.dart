@@ -1,10 +1,10 @@
 import 'package:classly/model/CalendarEvent.dart';
-import 'package:classly/widgets/screens/room_screen.dart';
+import 'package:classly/screens/room_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../../model/Course.dart';
-import '../../model/Room.dart';
+import '../model/Course.dart';
+import '../model/Room.dart';
 
 class EventScreen extends StatefulWidget {
   final CalendarEvent event;

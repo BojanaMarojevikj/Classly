@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../model/Room.dart';
+import '../model/Room.dart';
 
 class RoomInfoScreen extends StatelessWidget {
   final Room room;

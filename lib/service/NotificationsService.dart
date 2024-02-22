@@ -46,7 +46,7 @@ class NotificationsService {
     NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      0, // ID for the notification
+      0,
       'Event Reminder',
       'You have a class tomorrow!',
       tz.TZDateTime.from(

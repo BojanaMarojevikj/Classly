@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/calendar_screen.dart';
-import 'screens/notifications_screen.dart';
-import 'screens/profile_screen.dart';
+import 'calendar_screen.dart';
+import 'notifications_screen.dart';
+import 'profile_screen.dart';
 
 class BottomNavigation extends StatefulWidget {
   @override
