@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../model/Course.dart';
+import '../weather_widget.dart';
 import 'event_screen.dart';
 
 import '../../model/CalendarEvent.dart';
@@ -44,29 +45,43 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
 
-    @override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SfCalendar(
-        view: CalendarView.day,
-        dataSource: events,
-        onTap: (CalendarTapDetails details) {
-          if (details.appointments != null &&
-              details.appointments!.isNotEmpty) {
-            _showEventDetailsDialog(details.appointments![0]);
-          } else if (details.targetElement == CalendarElement.calendarCell) {
-            _showAddEventDialog(details.date!);
-          }
-        },
-        onViewChanged: (ViewChangedDetails details) {
-          _loadEventsForCurrentDay(details.visibleDates[0]);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAddEventDialog(DateTime.now());
-        },
-        child: Icon(Icons.add),
+    return MaterialApp(
+      title: 'Weather Calendar App',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Calendar'),
+          actions: [
+            WeatherWidget(),
+          ],
+        ),
+        body: Stack(
+          children: [
+            SfCalendar(
+              view: CalendarView.day,
+              dataSource: events,
+              onTap: (CalendarTapDetails details) {
+                if (details.appointments != null &&
+                    details.appointments!.isNotEmpty) {
+                  _showEventDetailsDialog(details.appointments![0]);
+                } else if (details.targetElement ==
+                    CalendarElement.calendarCell) {
+                  _showAddEventDialog(details.date!);
+                }
+              },
+              onViewChanged: (ViewChangedDetails details) {
+                _loadEventsForCurrentDay(details.visibleDates[0]);
+              },
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _showAddEventDialog(DateTime.now());
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
